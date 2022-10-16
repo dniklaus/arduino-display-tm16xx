@@ -37,36 +37,38 @@ class TM16XX
     TM16XX(byte dataPin, byte clockPin, byte strobePin, byte displays, boolean activateDisplay = true,
     	byte intensity = 7);
 
+    virtual ~TM16XX() { }
+
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
     virtual void setupDisplay(boolean active, byte intensity);
 
     /** Set a single display at pos (starting at 0) to a digit (left to right) */
     virtual void setDisplayDigit(byte digit, byte pos, boolean dot, const byte numberFont[] = NUMBER_FONT);
-	/** Set the display to an error message */
-	virtual void setDisplayToError();
-	/** Clear  a single display at pos (starting at 0, left to right) */ 
+    /** Set the display to an error message */
+    virtual void setDisplayToError();
+	  /** Clear  a single display at pos (starting at 0, left to right) */ 
     virtual void clearDisplayDigit(byte pos, boolean dot);
     /** Set the display to the values (left to right) */
     virtual void setDisplay(const byte values[], unsigned int length = 8);
     /** Clear the display */
-	virtual void clearDisplay();
+	  virtual void clearDisplay();
 
     /** Set the display to the string (defaults to built in font) */
-	virtual void setDisplayToString(const char* string, const word dots = 0, const byte pos = 0,
-		const byte font[] = FONT_DEFAULT);
+    virtual void setDisplayToString(const char* string, const word dots = 0, const byte pos = 0,
+     const byte font[] = FONT_DEFAULT);
     /** Set the display to the String (defaults to built in font) */
-	virtual void setDisplayToString(String string, const word dots = 0, const byte pos = 0,
+    virtual void setDisplayToString(String string, const word dots = 0, const byte pos = 0,
 		const byte font[] = FONT_DEFAULT);
 
   protected:
-	#if defined(ARDUINO) && ARDUINO >= 100
-		// pure virtual is NOT supported in older Arduino IDE
-		virtual void sendChar(byte pos, byte data, boolean dot) = 0;
-	#else
-		virtual void sendChar(byte pos, byte data, boolean dot);
-	#endif
-	
-	
+    #if defined(ARDUINO) && ARDUINO >= 100
+    // pure virtual is NOT supported in older Arduino IDE
+    virtual void sendChar(byte pos, byte data, boolean dot) = 0;
+    #else
+    virtual void sendChar(byte pos, byte data, boolean dot);
+    #endif
+
+
     virtual void sendCommand(byte led);
     virtual void sendData(byte add, byte data);
     virtual void send(byte data);

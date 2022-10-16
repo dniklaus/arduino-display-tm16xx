@@ -31,10 +31,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class TM1640 : public TM16XX
 {
   public:
-	/** Instantiate a tm1640 module specifying the display state, the starting intensity (0-7) data and clock pins. */
-  	TM1640(byte dataPin, byte clockPin, boolean activateDisplay = true, byte intensity = 7);
+    /** Instantiate a tm1640 module specifying the display state, the starting intensity (0-7) data and clock pins. */
+    TM1640(byte dataPin, byte clockPin, boolean activateDisplay = true, byte intensity = 7);
+    
+    virtual ~TM1640() { }
     /** Clear the display */
-	virtual void clearDisplay();
+    virtual void clearDisplay();
 
   protected:
     virtual void sendChar(byte pos, byte data, boolean dot);

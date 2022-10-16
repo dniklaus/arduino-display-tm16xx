@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TM16XX.h"
 #include "string.h"
+#include "math.h"
 
 TM16XX::TM16XX(byte dataPin, byte clockPin, byte strobePin, byte displays, boolean activateDisplay,
 	byte intensity)
@@ -41,7 +42,7 @@ TM16XX::TM16XX(byte dataPin, byte clockPin, byte strobePin, byte displays, boole
   digitalWrite(clockPin, HIGH);
 
   sendCommand(0x40);
-  sendCommand(0x80 | (activateDisplay ? 8 : 0) | min(7, intensity));
+  sendCommand(0x80 | (activateDisplay ? 8 : 0) | min(static_cast<unsigned char>(7), intensity));
 
   digitalWrite(strobePin, LOW);
   send(0xC0);
@@ -53,7 +54,7 @@ TM16XX::TM16XX(byte dataPin, byte clockPin, byte strobePin, byte displays, boole
 
 void TM16XX::setupDisplay(boolean active, byte intensity)
 {
-  sendCommand(0x80 | (active ? 8 : 0) | min(7, intensity));
+  sendCommand(0x80 | (active ? 8 : 0) | min(static_cast<unsigned char>(7), intensity));
 
   // necessary for the TM1640
   digitalWrite(strobePin, LOW);
@@ -69,11 +70,12 @@ void TM16XX::setDisplayDigit(byte digit, byte pos, boolean dot, const byte numbe
 
 void TM16XX::setDisplayToError()
 {
-    setDisplay(ERROR_DATA, 8);
+  setDisplay(ERROR_DATA, 8);
 
-	for (int i = 8; i < displays; i++) {
-	    clearDisplayDigit(i, 0);
-	}
+  for (unsigned char i = 8; i < displays; i++) 
+  {
+    clearDisplayDigit(i, 0);
+  }
 }
 
 void TM16XX::clearDisplayDigit(byte pos, boolean dot)
@@ -83,26 +85,32 @@ void TM16XX::clearDisplayDigit(byte pos, boolean dot)
 
 void TM16XX::setDisplay(const byte values[], unsigned int size)
 {
-  for (int i = 0; i < size; i++) {
+  for (unsigned char i = 0; i < size; i++)
+  {
     sendChar(i, values[i], 0);
   }
 }
 
 void TM16XX::clearDisplay()
 {
-  for (int i = 0; i < displays; i++) {
+  for (unsigned char i = 0; i < displays; i++)
+  {
     sendData(i << 1, 0);
   }
 }
 
 void TM16XX::setDisplayToString(const char* string, const word dots, const byte pos, const byte font[])
 {
-  for (int i = 0; i < displays - pos; i++) {
-  	if (string[i] != '\0') {
-	  sendChar(i + pos, font[string[i] - 32], (dots & (1 << (displays - i - 1))) != 0);
-	} else {
-	  break;
-	}
+  for (unsigned char i = 0; i < displays - pos; i++)
+  {
+  	if (string[i] != '\0') 
+    {
+	    sendChar(i + pos, font[string[i] - 32], (dots & (1 << (displays - i - 1))) != 0);
+	  } 
+    else 
+    {
+	    break;
+	  }
   }
 }
 
@@ -137,7 +145,8 @@ void TM16XX::sendData(byte address, byte data)
 
 void TM16XX::send(byte data)
 {
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 8; i++)
+  {
     digitalWrite(clockPin, LOW);
     digitalWrite(dataPin, data & 1 ? HIGH : LOW);
     data >>= 1;
@@ -153,7 +162,8 @@ byte TM16XX::receive()
   pinMode(dataPin, INPUT);
   digitalWrite(dataPin, HIGH);
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 8; i++)
+  {
     temp >>= 1;
 
     digitalWrite(clockPin, LOW);

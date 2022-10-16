@@ -17,41 +17,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
+#include "Arduino.h"
 #else
-	#include "WProgram.h"
+#include "WProgram.h"
 #endif
 
 #include "InvertedTM1638.h"
 
-InvertedTM1638::InvertedTM1638(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay,
-	byte intensity) : TM1638(dataPin, clockPin, strobePin, activateDisplay, intensity)
+InvertedTM1638::InvertedTM1638(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay, 
+                               byte intensity) : TM1638(dataPin, clockPin, strobePin, activateDisplay, intensity)
 {
-	// nothing to do
+  // nothing to do
 }
+
+virtual ~InvertedTM1638() { }
 
 void InvertedTM1638::setLED(byte color, byte pos)
 {
-    sendData(((7 - pos) << 1) + 1, color);
+  sendData(((7 - pos) << 1) + 1, color);
 }
 
 byte InvertedTM1638::getButtons()
 {
-	byte buttons = TM1638::getButtons();
+  byte buttons = TM1638::getButtons();
 
-	// swap each other
-	buttons = (buttons & 0b01010101) <<  1 | (buttons & 0b10101010) >>  1;
+  // swap each other
+  buttons = (buttons & 0b01010101) <<  1 | (buttons & 0b10101010) >>  1;
 
-	// swap each pair 
-	buttons = (buttons & 0b00110011) <<  2 | (buttons & 0b11001100) >>  2;
+  // swap each pair 
+  buttons = (buttons & 0b00110011) <<  2 | (buttons & 0b11001100) >>  2;
  
-	// swap each quad
-	buttons = (buttons & 0b00001111) <<  4 | (buttons & 0b11110000) >>  4;
+  // swap each quad
+  buttons = (buttons & 0b00001111) <<  4 | (buttons & 0b11110000) >>  4;
 
-	return buttons;
+  return buttons;
 }
 
 void InvertedTM1638::sendChar(byte pos, byte data, boolean dot)
 {
-	TM1638::sendChar(7 - pos, data & 0xC0 | (data & 0x07) << 3 | (data & 0x38) >> 3, dot);
+  TM1638::sendChar(7 - pos, (data & 0xC0) | (data & 0x07) << 3 | (data & 0x38) >> 3, dot);
 }
