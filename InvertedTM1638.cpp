@@ -30,8 +30,6 @@ InvertedTM1638::InvertedTM1638(byte dataPin, byte clockPin, byte strobePin, bool
   // nothing to do
 }
 
-virtual ~InvertedTM1638() { }
-
 void InvertedTM1638::setLED(byte color, byte pos)
 {
   sendData(((7 - pos) << 1) + 1, color);
